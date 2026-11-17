@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sóng cơ – Sóng âm – Sóng điện từ: ôn tập điền khuyết</title>
+<style>
+:root{--bg:#f6f8fb;--cd:#fff;--tx:#14213d;--mu:#5b6578;--ac:#2563eb;--r:#dc2626;--g:#16a34a;--ln:#d8dee9;--hl:#fff7d6}
+@media(prefers-color-scheme:dark){:root{--bg:#0e1524;--cd:#16203a;--tx:#e8edf8;--mu:#9aa6bf;--ac:#7aa2ff;--r:#f87171;--g:#4ade80;--ln:#2a3858;--hl:#3a3012}}
+*{box-sizing:border-box}html{font-size:28px}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:"Segoe UI",Roboto,Arial,sans-serif;line-height:1.5}
+.top{position:sticky;top:0;z-index:9;background:var(--bg);border-bottom:1px solid var(--ln);display:flex;gap:10px;align-items:center;padding:8px 14px}
+.bar{display:flex;gap:6px;flex:1}.bar i{flex:1;height:12px;border-radius:6px;background:var(--ln);cursor:pointer}.bar i.on{background:var(--ac)}.bar i.dn{background:var(--g)}
+.fs{display:flex;gap:4px;align-items:center;font-size:.6rem}
+button{font:inherit;color:var(--tx)}
+.fs button,.nav button,.ctl button{font-size:.6rem;background:var(--cd);border:1px solid var(--ln);border-radius:10px;padding:2px 12px;cursor:pointer}
+.grid{display:grid;grid-template-columns:1.15fr 1fr;gap:16px;max-width:1500px;margin:auto;padding:14px}
+.grid.one{grid-template-columns:1fr}.one .L{display:none}
+@media(max-width:820px){.grid{grid-template-columns:1fr}.L{position:static!important}}
+.L{position:sticky;top:56px;align-self:start}
+.card{background:var(--cd);border:1px solid var(--ln);border-radius:12px;padding:12px 16px}
+h1{font-size:1.05rem;margin:0 0 6px}canvas{width:100%;height:auto;display:block;background:var(--bg);border-radius:8px}
+.mu{color:var(--mu);font-size:.6rem;margin:4px 0}
+.ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:6px}
+.ctl .sl{font-size:.6rem;flex:1;min-width:230px;display:flex;flex-direction:column}.ctl input{width:100%}
+.R p{margin:.4em 0}
+.b{font:inherit;font-weight:700;color:var(--mu);background:none;border:none;border-bottom:2px dashed var(--mu);cursor:pointer;padding:0 6px;border-radius:0}
+.b.on{color:var(--g);border-bottom:2px solid var(--g)}
+table{border-collapse:collapse;width:100%;font-size:.8rem;margin:6px 0}th,td{border:1px solid var(--ln);padding:3px 8px;text-align:left}th{background:var(--hl)}
+.k{background:var(--hl);border-left:6px solid #eab308;border-radius:0 10px 10px 0;padding:8px 14px;margin:10px 0;font-size:.85rem}
+.row{display:flex;gap:8px;align-items:center;font-size:.7rem;margin-bottom:6px}.row button{font-size:.6rem;background:var(--cd);border:1px solid var(--ln);border-radius:8px;padding:2px 10px;cursor:pointer}
+.q{border:1px solid var(--ln);border-radius:10px;padding:8px 14px;margin:10px 0;background:var(--cd)}
+.q button{display:block;width:100%;text-align:left;font-size:.8rem;background:var(--bg);border:1px solid var(--ln);border-radius:8px;padding:4px 10px;margin:5px 0;cursor:pointer}
+.q button.ok{background:#16a34a33;border-color:var(--g)}.q button.no{background:#dc262633;border-color:var(--r)}
+.nav{display:flex;justify-content:space-between;max-width:1500px;margin:auto;padding:0 14px 40px}.nav button:disabled{opacity:.35}
+button:focus-visible{outline:2px solid var(--ac)}
+</style>
+</head>
+<body>
+<div class="top"><div class="bar" id="bar"></div><div class="fs"><button onclick="fz(-2)">A−</button><span id="fn">28</span><button onclick="fz(2)">A+</button></div></div>
+<div class="grid" id="gr"><div class="L card"><h1 id="h1"></h1><canvas id="cv" width="680" height="230"></canvas><div class="mu" id="cap"></div><div class="ctl" id="ctl"></div></div><div class="R card" id="R"></div></div>
+<div class="nav"><button id="pv">← Trước</button><button id="nx">Tiếp →</button></div>
+<script>
+var $=function(q){return document.querySelector(q)},T2=Math.PI*2,c=3e8,g=$('#cv').getContext('2d');
+function fm(n,d){return (+n.toFixed(d==null?2:d)).toString().replace('.',',')}
+function fl(l){var a=[[1e3,'km',1e3],[1,'m',1],[1e-3,'mm',1e-3],[1e-6,'μm',1e-6],[1e-9,'nm',1e-9],[0,'pm',1e-12]];for(var i=0;i<6;i++)if(l>=a[i][0])return fm(l/a[i][2])+' '+a[i][1]}
+function ff(f){return f<1e3?fm(f,0)+' Hz':f<1e6?fm(f/1e3,1)+' kHz':f<1e9?fm(f/1e6,1)+' MHz':fm(f/1e9,1)+' GHz'}
+function ln(a,b,x,y,col,w,d){g.beginPath();g.moveTo(a,b);g.lineTo(x,y);g.strokeStyle=col;g.lineWidth=w||1.5;g.setLineDash(d||[]);g.stroke();g.setLineDash([])}
+function dt(x,y,r,col){g.beginPath();g.arc(x,y,r,0,T2);g.fillStyle=col;g.fill()}
+function tx(s,x,y,col,f){g.fillStyle=col;g.font=f||'bold 14px sans-serif';g.fillText(s,x,y)}
+function ar(a,b,x,y,col){ln(a,b,x,y,col,2);var n=Math.atan2(y-b,x-a);ln(x,y,x-9*Math.cos(n-.4),y-9*Math.sin(n-.4),col,2);ln(x,y,x-9*Math.cos(n+.4),y-9*Math.sin(n+.4),col,2)}
+function wv(f,x0,x1,col,w){g.beginPath();for(var x=x0;x<=x1;x+=3){var y=f(x);x==x0?g.moveTo(x,y):g.lineTo(x,y)}g.strokeStyle=col;g.lineWidth=w||2.5;g.stroke()}
+var t=0,play=1,V={},cur=0,done={};
+var RG=[['Sóng vô tuyến',3,11.48,'#0d9488'],['Hồng ngoại',11.48,14.6,'#b91c1c'],['Nhìn thấy',14.6,14.9,'#16a34a'],['Tử ngoại',14.9,16.48,'#7c3aed'],['Tia X',16.48,18.48,'#4338ca'],['Tia γ',18.48,22,'#581c87']];
+function reg(l){for(var i=0;i<5;i++)if(l<RG[i][2])return i;return 5}
+var S=[
+{t:'I. Sóng cơ: định nghĩa, phân loại',cap:'Bấm đổi sóng ngang / sóng dọc, theo dõi chấm đỏ.',
+ ctl:[{t:'b',k:'dl',a:'〰️ Đang: sóng ngang (bấm để đổi)',b:'⋮⋮ Đang: sóng dọc (bấm để đổi)'}],
+ d:function(C){var ng=!V.dl,k=T2/160,A=ng?30:12,ph=2.2*t,rows=ng?[0]:[-40,-20,0,20,40],mid=124;function D(x){return A*Math.sin(ph-k*x)}
+  ar(14,20,130,20,C.tx);tx('phương truyền sóng',138,25,C.tx,'14px sans-serif');
+  if(ng)wv(function(x){return mid+D(x)},10,670,C.mu,1.5);
+  rows.forEach(function(r){for(var i=0;i<53;i++){var x=10+i*12.6,d=D(x);if(!(i==5&&r==0))dt(ng?x:x+d,ng?mid+d:mid+r,ng?4:3.5,C.ac)}});
+  var x5=73.,d5=D(x5);dt(ng?x5:x5+d5,ng?mid+d5:mid,7,C.r);
+  if(ng){ln(x5,mid-48,x5,mid+48,C.r,1.5,[4,3]);tx('dao động ⟂ truyền',x5+12,mid-50,C.r)}else{ln(x5-40,mid,x5+40,mid,C.r,1.5,[4,3]);tx('dao động ∥ truyền',x5-30,mid-56,C.r)}},
+ h:'<p><b>1. Định nghĩa:</b> Sóng cơ là {{dao động cơ}} lan truyền trong môi trường {{vật chất}}.</p><p><b>2. Nguyên nhân tạo sóng:</b> {{nguồn dao động}} bên ngoài và {{lực liên kết}} giữa các phần tử. Phần tử chỉ dao động quanh {{vị trí cân bằng}}; sóng truyền {{năng lượng}}, không truyền {{vật chất}}.</p><p><b>3. Phân loại:</b><br>- Sóng ngang: phương dao động {{vuông góc}} phương truyền (ví dụ {{sóng trên dây, mặt nước}}).<br>- Sóng dọc: phương dao động {{trùng}} phương truyền, có vùng {{nén – dãn}} (ví dụ {{sóng âm, lò xo}}).</p><p><b>4. Môi trường truyền:</b> sóng ngang: {{chất rắn và bề mặt chất lỏng}}; sóng dọc: {{rắn, lỏng, khí}}. Sóng cơ {{không}} truyền được trong chân không.</p><div class="k"><b>Ghi nhớ nhanh:</b> ngang ⟂, dọc ∥ so với phương truyền sóng (không phải so với mặt đất).</div>'},
+{t:'II. Đặc trưng và độ lệch pha',cap:'Kéo d hoặc bấm λ/4, λ/2, λ: so sánh dao động của O (đỏ) và M (xanh).',
+ ctl:[{t:'r',k:'d',l:'Khoảng cách d',min:0,max:2,st:.05,v:.25,u:' λ'},{t:'p',l:'λ/4',k:'d',v:.25},{t:'p',l:'λ/2',k:'d',v:.5},{t:'p',l:'λ',k:'d',v:1}],
+ d:function(C){var L=200,k=T2/L,ph=2.2*t,my=120,x0=40,xm=x0+V.d*L;function Y(x){return my-55*Math.sin(ph-k*(x-x0))}
+  ln(20,my,660,my,C.mu,1);wv(Y,x0,660,C.ac,2);ln(x0,my+70,x0,22,C.r,1,[4,3]);ln(xm,my+70,xm,22,C.g,1,[4,3]);
+  dt(x0,Y(x0),8,C.r);dt(xm,Y(xm),8,C.g);tx('O',x0-5,16,C.r);tx('M',xm-6,16,C.g);
+  ar(x0+4,my+60,Math.max(xm-4,x0+8),my+60,C.tx);tx('d = '+fm(V.d)+' λ  →  Δφ = '+fm(2*V.d)+'π rad',x0,my+88,C.tx,'bold 15px sans-serif')},
+ h:'<p><b>1. Các đại lượng:</b> biên độ A là độ lệch {{lớn nhất}} khỏi vị trí cân bằng; bước sóng λ là quãng đường sóng truyền trong {{một chu kì}}.</p><p><b>2. Công thức:</b> f = {{1/T}}; λ = {{v·T = v/f}}. Tốc độ truyền sóng v chỉ phụ thuộc {{môi trường}}, đổi f thì v {{không đổi}}.</p><p><b>3. Độ lệch pha</b> giữa hai điểm cách nhau d: Δφ = {{2πd/λ}}.</p><table><tr><th>d</th><th>Thời gian truyền</th><th>Δφ</th><th>Quan hệ</th></tr><tr><td>λ/4</td><td>{{T/4}}</td><td>{{π/2}}</td><td>{{vuông pha}}</td></tr><tr><td>λ/2</td><td>{{T/2}}</td><td>{{π}}</td><td>{{ngược pha}}</td></tr><tr><td>λ</td><td>{{T}}</td><td>{{2π}}</td><td>{{cùng pha}}</td></tr></table><div class="k"><b>Ghi nhớ nhanh:</b> d = kλ cùng pha; d = (k + ½)λ ngược pha; d = (2k + 1)λ/4 vuông pha.</div>'},
+{t:'III. Bài tập: xác định phương dao động và chiều truyền sóng',cap:'Quan sát: kéo M, bấm Bước 1–3. Luyện tập: bấm chế độ luyện tập, chọn đáp án rồi dùng Bước 1–3 để kiểm tra. Bấm Đề mới để đổi đề.',pz:1,
+ ctl:[{t:'b',k:'dir',a:'➡ Sóng truyền từ trái sang phải (bấm để đổi)',b:'⬅ Sóng truyền từ phải sang trái (bấm để đổi)'},{t:'r',k:'p',l:'Vị trí điểm M',min:.1,max:3,st:.05,v:1.25,u:' λ'},{t:'p',l:'Bước 1',k:'st',v:1},{t:'p',l:'Bước 2',k:'st',v:2},{t:'p',l:'Bước 3',k:'st',v:3},{t:'p',l:'Ẩn bước',k:'st',v:0},{t:'b',k:'ex',a:'🎯 Đang: quan sát (bấm để luyện tập)',b:'🎯 Đang: luyện tập (bấm để quay lại quan sát)'},{t:'f',l:'🎲 Đề mới',f:function(){nw()}},{t:'p',l:'M: ⬆ lên',k:'ans',v:1},{t:'p',l:'M: ⬇ xuống',k:'ans',v:2},{t:'p',l:'Sóng: ➡ sang phải',k:'ans',v:3},{t:'p',l:'Sóng: ⬅ sang trái',k:'ans',v:4}],
+ d:function(C){var k=T2/200,A=50,my=125,ex=V.ex,x0=40;if(ex&&V.ph==null)nw();var ph=ex?V.ph:2.2*t,dir=V.dir,sg=dir?1:-1,ps=dir?-1:1,xm=x0+V.p*200,st=V.st||0,ty=ex?V.ty:0,ans=ex?V.ans:0;
+  function Y(x){return my-A*Math.sin(ph+sg*k*(x-x0))}
+  var th=ph+sg*k*(xm-x0),dl=((-Math.PI/2-th)%T2+T2)%T2;if(dl>Math.PI)dl-=T2;var xc=xm+dl/(sg*k),front=(xm-xc)*ps<0,cs=Math.cos(th),up=cs>0,t1=ex&&ty==1,dn=!ex||st>=3||ans;
+  if(st>=2&&!t1){g.globalAlpha=.16;g.fillStyle=C.g;g.fillRect(Math.min(xc,xc-ps*100),34,100,170);g.fillStyle=C.r;g.fillRect(Math.min(xc,xc+ps*100),34,100,170);g.globalAlpha=1;
+   tx('sườn trước',xc-ps*50-34,50,C.g);tx('sườn sau',xc+ps*50-28,50,C.r)}
+  ln(20,my,660,my,C.mu,1);wv(Y,20,660,C.ac,2.5);
+  if(!t1||dn){if(dir){ar(300,22,200,22,C.tx)}else{ar(200,22,300,22,C.tx)}tx('chiều truyền sóng',306,27,C.tx,'14px sans-serif')}
+  if(st>=1){ln(xc,Y(xc),xc,34,'#eab308',1.5,[4,3]);dt(xc,Y(xc),9,'#eab308');tx('đáy gần nhất',xc-38,Y(xc)+24,'#eab308')}
+  var ym=Y(xm);dt(xm,ym,8,C.r);tx('M',xm+10,ym-10,C.r);
+  if((t1||st>=3)&&Math.abs(cs)>=.05)ar(xm+22,ym+(up?24:-24),xm+22,ym+(up?-24:24),C.g);
+  var bt=null,rt=dir?'từ phải sang trái':'từ trái sang phải';
+  if(st==1)bt=['Bước 1: xác định đáy sóng gần M nhất',C.tx];
+  else if(st==2)bt=[t1?'Bước 2: M nằm bên '+(xm<xc?'trái':'phải')+' đáy, M đang đi '+(up?'LÊN':'XUỐNG'):'Bước 2: M nằm ở sườn '+(front?'trước':'sau')+' của đáy này',C.tx];
+  else if(st>=3)bt=Math.abs(cs)<.05?['M ở đỉnh/đáy: vận tốc tức thời bằng 0',C.tx]:[t1?'Bước 3: M đi '+(up?'lên':'xuống')+' → sóng truyền '+(up?'từ M tới đáy':'từ đáy tới M')+' → '+rt:'Bước 3: M ở sườn '+(front?'trước':'sau')+' → đi '+(up?'LÊN':'XUỐNG'),C.g];
+  else if(ans){var ok=ty==0?((ans==1||ans==2)&&(ans==1)==up):((ans==3||ans==4)&&(ans==3)==!dir);bt=[ok?'✅ Đúng! Kiểm tra lại bằng Bước 1–3':'❌ Chưa đúng, bấm Bước 1, 2, 3 để xem lại',ok?C.g:C.r]}
+  else if(ex)bt=[ty==0?'Đề: sóng truyền '+rt+'. M đang đi lên hay xuống?':'Đề: M đang đi '+(up?'lên':'xuống')+' (mũi tên xanh). Sóng truyền theo chiều nào?',C.tx];
+  if(bt)tx(bt[0],20,214,bt[1],'bold 15px sans-serif')},
+ h:'<p><b>1. Phương dao động so với phương truyền:</b> sóng ngang: {{vuông góc}}; sóng dọc: {{trùng}}.</p><p><b>2. Biết chiều truyền, tìm chiều chuyển động của M</b> (giả sử sóng truyền từ trái sang phải):<br><b>Bước 1:</b> xác định {{đáy sóng}} gần điểm M nhất.<br><b>Bước 2:</b> phía bên {{trái}} đáy là sườn {{trước}}; phía bên {{phải}} đáy là sườn {{sau}}.<br><b>Bước 3:</b> điểm nằm trên sườn trước {{đi lên}}; điểm nằm trên sườn sau {{đi xuống}}.<br>Sóng truyền từ phải sang trái: sườn trước nằm bên {{phải}} đáy, các bước còn lại làm tương tự.</p><p><b>3. Biết chiều chuyển động của M, tìm chiều truyền:</b> M đi lên (sườn trước) thì sóng truyền theo chiều {{từ M tới đáy gần nhất}}; M đi xuống (sườn sau) thì sóng truyền theo chiều {{từ đáy gần nhất tới M}}.</p><p><b>4.</b> Tại đỉnh và đáy, vận tốc của phần tử {{bằng 0}}; tại vị trí cân bằng, vận tốc {{lớn nhất}}.</p><div class="k"><b>Ghi nhớ nhanh:</b> đáy gần nhất → sườn trước / sườn sau → trước đi lên, sau đi xuống. Sóng truyền sang phải: bên trái đáy đi lên, bên phải đáy đi xuống.</div>',qs:1},
+{t:'IV. Sóng âm',cap:'Kéo f (thang log) và A. Hình minh hoạ không đúng tỉ lệ bước sóng thật.',
+ ctl:[{t:'r',k:'s',l:'Tần số f',min:.7,max:4.6,st:.01,v:2.64,fn:function(){return ff(Math.pow(10,V.s))}},{t:'r',k:'a',l:'Biên độ A',min:2,max:10,st:1,v:6},{t:'p',l:'10 Hz',k:'s',v:1},{t:'p',l:'440 Hz',k:'s',v:2.64},{t:'p',l:'30 kHz',k:'s',v:4.48}],
+ d:function(C){var f=Math.pow(10,V.s),lam=30+(4.6-V.s)*55,k=T2/lam,ph=2.2*t,ok=f>=16&&f<=2e4,col=ok?C.g:C.r;
+  tx((f<16?'HẠ ÂM':f>2e4?'SIÊU ÂM':'ÂM NGHE ĐƯỢC')+'  |  f = '+ff(f),14,24,col,'bold 16px sans-serif');tx(ok?'🔊 nghe được':'🔇 không nghe được',470,24,col,'14px sans-serif');
+  for(var r=0;r<5;r++)for(var i=0;i<54;i++){var x=14+i*12,d=V.a*Math.sin(ph-k*x);dt(x+d,64+r*32,3.2,C.ac)}
+  tx('λ = v/f ≈ '+fl(340/f)+' (v ≈ 340 m/s)',14,222,C.mu,'13px sans-serif')},
+ h:'<p><b>1.</b> Sóng âm là sóng cơ truyền trong {{rắn, lỏng, khí}}; trong chất khí là sóng {{dọc}}; {{không}} truyền được trong chân không.</p><table><tr><th>Loại</th><th>Tần số</th></tr><tr><td>Hạ âm</td><td>{{f < 16 Hz}}</td></tr><tr><td>Âm nghe được</td><td>{{16 Hz – 20 000 Hz}}</td></tr><tr><td>Siêu âm</td><td>{{f > 20 000 Hz}}</td></tr></table><p><b>2.</b> Âm to ứng với {{biên độ}} lớn; âm cao ứng với {{tần số}} lớn.</p><p><b>3.</b> Bước sóng: λ = {{v/f}}.</p><div class="k"><b>Ghi nhớ nhanh:</b> bước sóng ngắn nhất nghe được ứng với tần số lớn nhất (λ<sub>min</sub> = v/f<sub>max</sub>).</div>'},
+{t:'V. Sóng điện từ và thang sóng',cap:'Kéo f hoặc bấm vào vùng, đọc λ = c/f. Thứ tự từ trái sang phải: λ giảm dần.',
+ ctl:[{t:'r',k:'lf',l:'Tần số f',min:3,max:22,st:.05,v:7,fn:function(){return ff(Math.pow(10,V.lf))}}].concat([7,13,14.75,15.7,17.5,20.5].map(function(m,i){return {t:'p',l:RG[i][0],k:'lf',v:m}})),
+ d:function(C){var w=105,x0=20,i=reg(V.lf),y=48,r=RG[i],lf=V.lf,f=Math.pow(10,lf);
+  tx('λ dài nhất · f nhỏ nhất',x0,24,C.mu,'13px sans-serif');tx('λ ngắn nhất · f lớn nhất',x0+6*w-150,24,C.mu,'13px sans-serif');
+  RG.forEach(function(q,j){var gr=g.createLinearGradient(x0+j*w,0,x0+(j+1)*w,0);if(j==2)['#ef4444','#f97316','#facc15','#22c55e','#3b82f6','#4f46e5','#8b5cf6'].forEach(function(cc,n){gr.addColorStop(n/6,cc)});else{gr.addColorStop(0,q[3]);gr.addColorStop(1,q[3])}
+   g.globalAlpha=j==i?1:.45;g.fillStyle=gr;g.fillRect(x0+j*w,y,w-3,52);g.globalAlpha=1;tx(q[0],x0+j*w+3,y+72,C.tx,'12px sans-serif')});
+  var mx=x0+i*w+(lf-r[1])/(r[2]-r[1])*(w-3);g.beginPath();g.moveTo(mx,y+54);g.lineTo(mx-8,y+68);g.lineTo(mx+8,y+68);g.fillStyle=C.tx;g.fill();
+  tx('f = '+ff(f)+'  |  λ = c/f = '+fl(c/f),x0,172,C.tx,'bold 16px sans-serif');tx('Vùng: '+r[0],x0,204,r[3],'bold 16px sans-serif')},
+ h:'<p><b>1. Định nghĩa:</b> sóng điện từ là {{điện từ trường}} lan truyền trong không gian; là sóng {{ngang}}; E⃗ và B⃗ dao động {{cùng pha}}, {{vuông góc}} nhau và vuông góc phương truyền. Truyền được trong {{chân không}} với c = {{3.10⁸ m/s}}.</p><p><b>2.</b> λ = {{c/f}}. Bước sóng càng ngắn thì tần số {{càng lớn}} và năng lượng {{càng lớn}}.</p><p><b>3. Thang sóng điện từ (λ giảm dần):</b></p><table><tr><th>#</th><th>Vùng</th><th>Bước sóng</th></tr><tr><td>1</td><td>{{Sóng vô tuyến}}</td><td>{{1 mm – 100 km}}</td></tr><tr><td>2</td><td>{{Tia hồng ngoại}}</td><td>{{0,76 μm – 1 mm}}</td></tr><tr><td>3</td><td>{{Ánh sáng nhìn thấy}}</td><td>{{0,38 – 0,76 μm}}</td></tr><tr><td>4</td><td>{{Tia tử ngoại}}</td><td>{{10 – 400 nm}}</td></tr><tr><td>5</td><td>{{Tia X}}</td><td>{{30 pm – 3 nm}}</td></tr><tr><td>6</td><td>{{Tia γ}}</td><td>{{10⁻⁵ – 0,1 nm}}</td></tr></table><p><b>4. Ánh sáng nhìn thấy</b> theo λ giảm dần: {{đỏ, cam, vàng, lục, lam, chàm, tím}}; đỏ có λ {{dài nhất}} (0,76 μm), tím có f {{lớn nhất}}.</p><div class="k"><b>Ghi nhớ nhanh:</b> Vô tuyến → Hồng ngoại → Nhìn thấy → Tử ngoại → Tia X → Tia γ.</div>'},
+{t:'VI. Vận dụng',one:1,h:''}];
+var Q=[{q:'Sóng nào sau đây là sóng dọc?',o:['Sóng mặt nước','Sóng trên dây đàn hồi','Sóng âm trong không khí'],a:2,e:'Phần tử khí dao động trùng phương truyền sóng.'},
+{q:'Hai điểm trên phương truyền sóng cách nhau λ/2 thì dao động:',o:['Cùng pha','Ngược pha','Vuông pha'],a:1,e:'Δφ = 2π·(λ/2)/λ = π: ngược pha.'},
+{q:'Sóng âm có f = 500 Hz truyền trong không khí với v = 340 m/s. Bước sóng là:',o:['0,68 m','1,47 m','170 000 m'],a:0,e:'λ = v/f = 340/500 = 0,68 m.'},
+{q:'Sắp xếp theo bước sóng giảm dần:',o:['Vô tuyến → hồng ngoại → nhìn thấy → tử ngoại → tia X → tia γ','Tia γ → tia X → tử ngoại → nhìn thấy → hồng ngoại → vô tuyến','Hồng ngoại → vô tuyến → nhìn thấy → tia X → tử ngoại → tia γ'],a:0,e:'λ giảm dần cũng là f tăng dần, đi từ vô tuyến đến tia γ.'}];
+var Q2=[{q:'Sóng truyền trên mặt nước theo phương nằm ngang, các phần tử nước dao động theo phương thẳng đứng. Đây là sóng gì?',o:['Sóng ngang: phương dao động vuông góc phương truyền','Sóng dọc: phương dao động trùng phương truyền','Sóng ngang vì sóng truyền theo phương nằm ngang'],a:0,e:'Phương dao động (thẳng đứng) vuông góc phương truyền (nằm ngang) nên là sóng ngang. “Ngang” không phải do sóng truyền theo phương nằm ngang.'},
+{q:'Sóng ngang truyền trên dây từ trái sang phải. Điểm M nằm ngay bên trái đáy sóng gần nhất. Tại thời điểm đang xét, M:',o:['Đi lên','Đi xuống','Đứng yên'],a:0,e:'Bước 1: đáy gần nhất ở bên phải M. Bước 2: M nằm bên trái đáy nên ở sườn trước. Bước 3: sườn trước đi lên.'},
+{q:'Sóng ngang truyền từ phải sang trái. Điểm N nằm ngay bên trái đáy sóng gần nhất. N đang:',o:['Đi lên','Đi xuống','Đứng yên'],a:1,e:'Sóng truyền sang trái nên sườn trước nằm bên phải đáy. N ở bên trái đáy nên thuộc sườn sau, đi xuống.'},
+{q:'Điểm P trên dây đang đi lên và nằm ngay bên phải đáy sóng gần nhất. Sóng truyền theo chiều nào?',o:['Từ trái sang phải','Từ phải sang trái','Không xác định được'],a:1,e:'P đi lên nên P ở sườn trước, sóng truyền theo chiều từ P tới đáy gần nhất. Đáy nằm bên trái P nên sóng truyền từ phải sang trái.'}];
+var AQ=Q.concat(Q2);
+function qh(arr,off){return arr.map(function(q,n){return '<div class="q"><b>Câu '+(n+1)+'.</b> '+q.q+q.o.map(function(o,m){return '<button onclick="an(this,'+(n+off)+','+m+')">'+'ABC'[m]+'. '+o+'</button>'}).join('')+'<div class="mu"></div></div>'}).join('')}
+function nw(){var k=T2/200,sg,c;do{V.dir=Math.random()<.5?1:0;V.ph=Math.random()*T2;V.p=1+Math.random()*1.5;sg=V.dir?1:-1;c=Math.cos(V.ph+sg*k*V.p*200)}while(Math.abs(c)<.4);V.ty=Math.random()<.5?0:1;V.ans=0;V.st=0;lab()}
+function css(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim()}
+function draw(){g.clearRect(0,0,680,230);if(!S[cur].one)S[cur].d({tx:getComputedStyle(document.body).color,mu:css('--mu'),ac:css('--ac'),r:css('--r'),g:css('--g')})}
+function lab(){S[cur].ctl&&S[cur].ctl.forEach(function(o,j){if(o.t=='r'){var e=$('#v'+j);e.textContent=o.fn?o.fn():fm(V[o.k])+(o.u||'');e.nextElementSibling.value=V[o.k]}else if(o.t=='b')$('#ct'+j).textContent=V[o.k]?o.b:o.a})}
+function go(i){cur=i;V={};var s=S[i],h='';for(var j=0;j<i;j++)done[j]=1;
+ $('#bar').innerHTML=S.map(function(_,j){return '<i class="'+(j==i?'on':done[j]?'dn':'')+'" onclick="go('+j+')"></i>'}).join('');
+ $('#gr').className='grid'+(s.one?' one':'');$('#h1').textContent=s.t;$('#cap').textContent=s.cap||'';
+ play=!s.pz;h='<button class="p" onclick="pl()" id="pb">'+(play?'⏸ Dừng':'▶ Phát')+'</button>';
+ (s.ctl||[]).forEach(function(o,j){if(o.t=='r'){V[o.k]=o.v;h+='<label class="sl">'+o.l+' = <b id="v'+j+'"></b><input type="range" min="'+o.min+'" max="'+o.max+'" step="'+o.st+'" value="'+o.v+'" oninput="V[\''+o.k+'\']=+this.value;lab();draw()"></label>'}else if(o.t=='b'){V[o.k]=0;h+='<button id="ct'+j+'" onclick="V[\''+o.k+'\']=!V[\''+o.k+'\'];lab();draw()"></button>'}else if(o.t=='f')h+='<button onclick="S[cur].ctl['+j+'].f();draw()">'+o.l+'</button>';else h+='<button onclick="V[\''+o.k+'\']='+o.v+';lab();draw()">'+o.l+'</button>'});
+ $('#ctl').innerHTML=h;
+ if(s.one){$('#R').innerHTML='<h1>'+s.t+'</h1><div class="k"><b>Dạng bài:</b> xác định loại sóng/đại lượng → chọn công thức (Δφ = 2πd/λ; λ = v/f; λ = c/f) → đối chiếu thang sóng.</div>'+qh(Q,0)}
+ else $('#R').innerHTML='<div class="row"><b>Điền vào chỗ trống (bấm ô để hiện đáp án)</b><button onclick="al(1)">Hiện hết</button><button onclick="al(0)">Ẩn hết</button></div>'+s.h.replace(/\{\{(.+?)\}\}/g,function(m,a){return '<button class="b" data-a="'+a.replace(/"/g,'&quot;')+'">······</button>'})+(s.qs?'<p><b>Bài tập: xác định phương dao động và chiều truyền sóng (bấm chọn)</b></p>'+qh(Q2,4):'');
+ $('#pv').disabled=!i;$('#nx').disabled=i==S.length-1;lab();draw();window.scrollTo(0,0)}
+function an(b,n,m){var q=AQ[n],p=b.parentNode;if(p.dataset.d)return;p.dataset.d=1;p.querySelectorAll('button').forEach(function(x,j){x.disabled=true;if(j==q.a)x.classList.add('ok')});if(m!=q.a)b.classList.add('no');p.querySelector('.mu').textContent=(m==q.a?'✅ Đúng. ':'❌ Chưa đúng. ')+q.e}
+function sb(b,on){b.classList.toggle('on',on);b.textContent=on?b.dataset.a:'······'}
+$('#R').onclick=function(e){var b=e.target.closest('.b');if(b)sb(b,!b.classList.contains('on'))};
+function al(on){document.querySelectorAll('.b').forEach(function(b){sb(b,!!on)})}
+function pl(){play=!play;$('#pb').textContent=play?'⏸ Dừng':'▶ Phát'}
+function fz(d){var s=Math.max(18,Math.min(40,parseFloat(getComputedStyle(document.documentElement).fontSize)+d));document.documentElement.style.fontSize=s+'px';$('#fn').textContent=s}
+$('#pv').onclick=function(){go(cur-1)};$('#nx').onclick=function(){go(cur+1)};
+var last=0;function lp(n){if(play){t+=Math.min(.1,(n-last)/1000);draw()}last=n;requestAnimationFrame(lp)}
+go(0);requestAnimationFrame(lp);
+</script>
+</body>
+</html>
